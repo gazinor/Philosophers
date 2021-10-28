@@ -1,25 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   e_state.h                                          :+:      :+:    :+:   */
+/*   t_timeval.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jodufour <jodufour@student.42.fr>          +#+  +:+       +#+        */
+/*   By: glaurent <glaurent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/12 12:04:38 by jodufour          #+#    #+#             */
-/*   Updated: 2021/09/12 12:05:43 by jodufour         ###   ########.fr       */
+/*   Created: 2021/09/12 09:32:07 by glaurent          #+#    #+#             */
+/*   Updated: 2021/09/12 09:32:44 by glaurent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef E_STATE_H
-# define E_STATE_H
+#ifndef T_TIMEVAL_H
+# define T_TIMEVAL_H
 
-enum	e_state
-{
-	TOOK_FORK,
-	EATING,
-	SLEEPING,
-	THINKING,
-	DEAD
-};
+# include <sys/time.h>
+
+typedef struct timeval	t_timeval;
 
 #endif

@@ -1,20 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   t_fork.h                                           :+:      :+:    :+:   */
+/*   phi_is_digit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jodufour <jodufour@student.42.fr>          +#+  +:+       +#+        */
+/*   By: glaurent <glaurent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/13 18:05:26 by jodufour          #+#    #+#             */
-/*   Updated: 2021/09/13 18:05:57 by jodufour         ###   ########.fr       */
+/*   Created: 2021/09/11 00:18:15 by glaurent          #+#    #+#             */
+/*   Updated: 2021/09/11 00:18:58 by glaurent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef T_FORK_H
-# define T_FORK_H
+#include <stdbool.h>
 
-# include <pthread.h>
-
-typedef pthread_mutex_t	t_fork;
-
-#endif
+bool	phi_is_digit(char const c)
+{
+	return (!(c < '0' || c > '9'));
+}

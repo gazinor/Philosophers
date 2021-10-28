@@ -1,19 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   colors.h                                           :+:      :+:    :+:   */
+/*   t_fork.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jodufour <jodufour@student.42.fr>          +#+  +:+       +#+        */
+/*   By: glaurent <glaurent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/10 13:58:08 by jodufour          #+#    #+#             */
-/*   Updated: 2021/09/10 14:09:36 by jodufour         ###   ########.fr       */
+/*   Created: 2021/09/13 18:05:26 by glaurent          #+#    #+#             */
+/*   Updated: 2021/09/13 18:05:57 by glaurent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef COLORS_H
-# define COLORS_H
+#ifndef T_FORK_H
+# define T_FORK_H
 
-# define RED "\e[31m"
-# define WHITE "\e[0m"
+# include <pthread.h>
+
+typedef pthread_mutex_t	t_fork;
 
 #endif

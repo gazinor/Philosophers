@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jodufour <jodufour@student.42.fr>          +#+  +:+       +#+        */
+/*   By: glaurent <glaurent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/10 14:08:12 by jodufour          #+#    #+#             */
-/*   Updated: 2021/09/21 03:15:15 by jodufour         ###   ########.fr       */
+/*   Created: 2021/09/10 14:08:12 by glaurent          #+#    #+#             */
+/*   Updated: 2021/09/21 03:15:15 by glaurent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,5 +36,8 @@ t_uint	phi_atou(char const *s);
 
 t_lint	phi_atol(char const *s);
 t_lint	phi_now(void);
+
+void	*is_dead_routine(void *param);
+void	*finished_eating_routine(void *param);
 
 #endif

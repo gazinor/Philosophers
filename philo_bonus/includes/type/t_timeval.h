@@ -1,22 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   t_voice.h                                          :+:      :+:    :+:   */
+/*   t_timeval.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jodufour <jodufour@student.42.fr>          +#+  +:+       +#+        */
+/*   By: glaurent <glaurent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/13 20:10:21 by jodufour          #+#    #+#             */
-/*   Updated: 2021/09/13 20:14:19 by jodufour         ###   ########.fr       */
+/*   Created: 2021/09/12 09:32:07 by glaurent          #+#    #+#             */
+/*   Updated: 2021/09/12 09:32:44 by glaurent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef T_VOICE_H
-# define T_VOICE_H
+#ifndef T_TIMEVAL_H
+# define T_TIMEVAL_H
 
-# include <pthread.h>
+# include <sys/time.h>
 
-typedef pthread_mutex_t	t_voice;
-
-t_voice	*phi_voice_get(void);
+typedef struct timeval	t_timeval;
 
 #endif
