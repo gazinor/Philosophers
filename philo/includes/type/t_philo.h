@@ -16,6 +16,7 @@
 # include <pthread.h>
 # include "type/t_int.h"
 # include "type/t_fork.h"
+# include "type/t_ctx.h"
 # include "type/t_timeval.h"
 
 typedef struct s_philo	t_philo;
@@ -29,6 +30,8 @@ struct s_philo
 	t_lint		last_meal;
 	t_fork		*fork_right;
 	t_fork		*fork_left;
+	t_ctx		*ctx;
+	int			nb_locked_forks;
 };
 
 int		phi_philo_born(t_philo *philo);
@@ -38,6 +41,8 @@ int		phi_philo_state_msg(t_philo *philo);
 int		phi_philo_think(t_philo *philo);
 int		phi_philo_wait(t_philo *philo, t_lint msec);
 
-void	phi_philo_init(t_philo *philo, t_fork *fork);
+void	phi_philo_init(t_philo *philo, t_fork *fork, t_ctx *ctx);
+
+int	is_dead(t_philo *philo);
 
 #endif

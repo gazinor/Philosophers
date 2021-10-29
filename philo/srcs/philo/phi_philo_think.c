@@ -19,9 +19,11 @@ int	phi_philo_think(t_philo *philo)
 {
 	int	ret;
 
+	if (pthread_mutex_lock(&philo->ctx->access))
+		return (MUTEX_LOCK_ERR);
 	philo->state = THINKING;
+	if (pthread_mutex_unlock(&philo->ctx->access))
+		return (MUTEX_UNLOCK_ERR);
 	ret = phi_philo_state_msg(philo);
-	if (ret == SUCCESS)
-		ret = phi_philo_wait(philo, 0);
 	return (ret);
 }

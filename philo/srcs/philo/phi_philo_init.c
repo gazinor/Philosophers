@@ -15,10 +15,11 @@
 #include "type/t_ctx.h"
 #include "type/t_philo.h"
 #include "enum/e_state.h"
+#include "philosophers.h"
 
-void	phi_philo_init(t_philo *philo, t_fork *fork)
+void	phi_philo_init(t_philo *philo, t_fork *fork, t_ctx *ctx)
 {
-	t_uint const	nb_philo = phi_ctx_get()->nb_philo;
+	t_uint const	nb_philo = ctx->nb_philo;
 	t_uint			i;
 
 	i = 0;
@@ -27,13 +28,15 @@ void	phi_philo_init(t_philo *philo, t_fork *fork)
 		pthread_mutex_init(fork + i, NULL);
 		philo[i].idx = i + 1;
 		philo[i].meal_count = 0;
-		philo[i].last_meal = 0;
+		philo[i].last_meal = phi_now();
 		philo[i].state = THINKING;
 		philo[i].fork_right = fork + i;
 		if (i)
 			philo[i].fork_left = fork + i - 1;
 		else
 			philo[i].fork_left = fork + nb_philo - 1;
+		philo[i].ctx = ctx;
+		philo[i].nb_locked_forks = 0;
 		++i;
 	}
 }

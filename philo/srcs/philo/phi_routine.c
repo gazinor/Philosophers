@@ -22,13 +22,20 @@
 
 void	*phi_routine(void *param)
 {
-	t_ctx *const	ctx = phi_ctx_get();
 	t_philo *const	philo = (t_philo *)param;
+	t_ctx *const	ctx = philo->ctx;
 	int				ret;
 
 	ret = SUCCESS;
+	if (pthread_mutex_lock(&ctx->start_mutex))
+		ret = MUTEX_LOCK_ERR;
+	philo->last_meal = phi_now();
+	if (pthread_mutex_unlock(&ctx->start_mutex))
+		ret = MUTEX_UNLOCK_ERR;
 	if (pthread_mutex_lock(&ctx->access))
 		ret = MUTEX_LOCK_ERR;
+	if (philo->last_meal == -1)
+		ret = GET_TIME_OF_DAY_ERR;
 	while (ret == SUCCESS
 		&& (ctx->required_meals == -1
 			|| (ctx->meal_count / ctx->nb_philo) < ctx->required_meals))
@@ -41,6 +48,8 @@ void	*phi_routine(void *param)
 			ret = phi_philo_sleep(philo);
 		if (ret == SUCCESS)
 			ret = phi_philo_think(philo);
+		if (pthread_mutex_lock(&ctx->access))
+			ret = MUTEX_LOCK_ERR;
 	}
 	if (pthread_mutex_unlock(&ctx->access))
 		ret = MUTEX_UNLOCK_ERR;

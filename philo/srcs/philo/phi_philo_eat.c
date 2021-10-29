@@ -22,35 +22,50 @@ static int	lock_forks(t_philo *philo, t_fork *fork0, t_fork *fork1)
 {
 	int	ret;
 
-	ret = phi_philo_wait(philo, 0);
-	if (ret == SUCCESS)
-	{
-		if (pthread_mutex_lock(fork0))
-			return (MUTEX_LOCK_ERR);
-		ret = phi_philo_wait(philo, 0);
-		if (ret != SUCCESS)
-			return (ret);
-		philo->state = TOOK_FORK;
-		ret = phi_philo_state_msg(philo);
-		if (ret != SUCCESS)
-			return (ret);
-		if (fork0 == fork1)
-			return (phi_philo_wait(philo, phi_ctx_get()->time_to_die * 2 + 1));
-		if (pthread_mutex_lock(fork1))
-			return (MUTEX_LOCK_ERR);
-		ret = phi_philo_wait(philo, 0);
-		if (ret != SUCCESS)
-			return (ret);
-		return (phi_philo_state_msg(philo));
-	}
-	return (ret);
+	if (pthread_mutex_lock(fork0))
+		return (MUTEX_LOCK_ERR);
+	if (pthread_mutex_lock(&philo->ctx->access))
+		return (MUTEX_LOCK_ERR);
+	++philo->nb_locked_forks;
+	philo->state = TOOK_FORK;
+	if (pthread_mutex_unlock(&philo->ctx->access))
+		return (MUTEX_UNLOCK_ERR);
+	ret = phi_philo_state_msg(philo);
+	if (fork0 == fork1)
+		return (phi_philo_wait(philo, philo->ctx->time_to_die * 2 + 1));
+	if (ret != SUCCESS)
+		return (ret);
+	if (pthread_mutex_lock(fork1))
+		return (MUTEX_LOCK_ERR);
+	if (pthread_mutex_lock(&philo->ctx->access))
+		return (MUTEX_LOCK_ERR);
+	++philo->nb_locked_forks;
+	if (pthread_mutex_unlock(&philo->ctx->access))
+		return (MUTEX_UNLOCK_ERR);
+	return (phi_philo_state_msg(philo));
 }
 
-static int	unlock_forks(t_fork *fork0, t_fork *fork1)
+static int	unlock_forks(t_philo *philo, t_fork *fork0, t_fork *fork1)
 {
-	if (pthread_mutex_unlock(fork0))
-		return (MUTEX_UNLOCK_ERR);
-	if (pthread_mutex_unlock(fork1))
+	t_fork	*tmp;
+
+	if (pthread_mutex_lock(&philo->ctx->access))
+		return (MUTEX_LOCK_ERR);
+	if (!(philo->idx % 2))
+	{
+		tmp = fork0;
+		fork0 = fork1;
+		fork1 = tmp;
+	}
+	if (philo->nb_locked_forks >= 1)
+	{
+		if (pthread_mutex_unlock(fork0))
+			return (MUTEX_UNLOCK_ERR);
+		if (philo->nb_locked_forks > 1)
+			if (pthread_mutex_unlock(fork1))
+				return (MUTEX_UNLOCK_ERR);
+	}
+	if (pthread_mutex_unlock(&philo->ctx->access))
 		return (MUTEX_UNLOCK_ERR);
 	return (SUCCESS);
 }
@@ -71,7 +86,7 @@ static int	update_meal_counts(t_philo *philo, t_ctx *const ctx)
 
 int	phi_philo_eat(t_philo *philo)
 {
-	t_ctx *const	ctx = phi_ctx_get();
+	t_ctx *const	ctx = philo->ctx;
 	int				ret;
 
 	if (philo->idx % 2)
@@ -80,8 +95,16 @@ int	phi_philo_eat(t_philo *philo)
 		ret = lock_forks(philo, philo->fork_left, philo->fork_right);
 	if (ret == SUCCESS)
 	{
+		if (pthread_mutex_lock(&ctx->access))
+			return (MUTEX_LOCK_ERR);
 		philo->state = EATING;
+		if (pthread_mutex_unlock(&ctx->access))
+			return (MUTEX_UNLOCK_ERR);
+		if (pthread_mutex_lock(&ctx->meal_time))
+			return (MUTEX_LOCK_ERR);
 		philo->last_meal = phi_now();
+		if (pthread_mutex_unlock(&ctx->meal_time))
+			return (MUTEX_UNLOCK_ERR);
 		if (philo->last_meal == -1)
 			ret = GET_TIME_OF_DAY_ERR;
 		else
@@ -90,7 +113,7 @@ int	phi_philo_eat(t_philo *philo)
 	if (ret == SUCCESS)
 		ret = phi_philo_wait(philo, ctx->time_to_eat);
 	if (ret == SUCCESS)
-		ret = unlock_forks(philo->fork_right, philo->fork_left);
+		ret = unlock_forks(philo, philo->fork_right, philo->fork_left);
 	if (ret == SUCCESS)
 		ret = update_meal_counts(philo, ctx);
 	return (ret);

@@ -16,15 +16,21 @@
 
 int	main(int ac, char const **av)
 {
-	int	ret;
+	t_ctx	*ctx;
+	int		ret;
 
+	ctx = &(t_ctx){0, 0, 0, 0, -1, 0, 0,
+		PTHREAD_MUTEX_INITIALIZER, 
+		PTHREAD_MUTEX_INITIALIZER, 
+		PTHREAD_MUTEX_INITIALIZER, 
+		PTHREAD_MUTEX_INITIALIZER};
 	if (ac == 5 || ac == 6)
 	{
 		ret = phi_format_check(av);
 		if (ret == SUCCESS)
-			ret = phi_ctx_init(av);
+			ret = phi_ctx_init(av, ctx);
 		if (ret == SUCCESS)
-			ret = phi_run();
+			ret = phi_run(ctx);
 	}
 	else
 		ret = AC_ERR;

@@ -19,13 +19,17 @@
 
 int	is_dead(t_philo *philo)
 {
+	if (pthread_mutex_lock(&philo->ctx->access))
+		return (MUTEX_LOCK_ERR);
 	philo->state = DEAD;
+	if (pthread_mutex_unlock(&philo->ctx->access))
+		return (MUTEX_UNLOCK_ERR);
 	return (phi_philo_state_msg(philo));
 }
 
 int	phi_philo_wait(t_philo *philo, t_lint msec)
 {
-	t_ctx *const	ctx = phi_ctx_get();
+	t_ctx *const	ctx = philo->ctx;
 	t_lint			start;
 	t_lint			now;
 	t_lint			waited;
@@ -34,8 +38,6 @@ int	phi_philo_wait(t_philo *philo, t_lint msec)
 	if (start == -1)
 		return (GET_TIME_OF_DAY_ERR);
 	waited = (now = phi_now()) - start;
-	if ((now - philo->last_meal) >= ctx->time_to_die)
-		return (is_dead(philo));
 	while (now != -1 && waited < msec)
 	{
 		if (usleep(100) == -1)

@@ -18,10 +18,14 @@
 
 int	phi_philo_sleep(t_philo *philo)
 {
-	t_ctx *const	ctx = phi_ctx_get();
+	t_ctx *const	ctx = philo->ctx;
 	int				ret;
 
+	if (pthread_mutex_lock(&philo->ctx->access))
+		return (MUTEX_LOCK_ERR);
 	philo->state = SLEEPING;
+	if (pthread_mutex_unlock(&philo->ctx->access))
+		return (MUTEX_UNLOCK_ERR);
 	ret = phi_philo_state_msg(philo);
 	if (ret == SUCCESS)
 		ret = phi_philo_wait(philo, ctx->time_to_sleep);

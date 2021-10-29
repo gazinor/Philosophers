@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jodufour <jodufour@student.42.fr>          +#+  +:+       +#+         #
+#    By: glaurent <glaurent@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/09/08 23:18:36 by jodufour          #+#    #+#              #
-#    Updated: 2021/09/21 08:10:15 by jodufour         ###   ########.fr        #
+#    Created: 2021/09/08 23:18:36 by glaurent          #+#    #+#              #
+#    Updated: 2021/09/21 08:10:15 by glaurent         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 

@@ -21,6 +21,8 @@ int	phi_limits_check(char const *s, t_lint nb)
 	char		check[20];
 	int			len;
 
+	if (!*s)
+		return (NO_VALUE);
 	while (phi_is_digit(*ptr))
 		++ptr;
 	if ((ptr - s) > 19)

@@ -15,6 +15,7 @@
 
 # include <pthread.h>
 # include "type/t_int.h"
+# include "type/t_voice.h"
 
 typedef struct s_ctx	t_ctx;
 
@@ -28,17 +29,20 @@ struct s_ctx
 	t_lint			meal_count;
 	t_lint			start;
 	pthread_mutex_t	access;
+	pthread_mutex_t	meal_time;
+	pthread_mutex_t	start_mutex;
+	t_voice			voice;
 };
 
 int		phi_ctx_init_nb_philo(char const *s);
 int		phi_ctx_init_time_to_die(char const *s);
 int		phi_ctx_init_time_to_eat(char const *s);
 int		phi_ctx_init_time_to_sleep(char const *s);
-int		phi_ctx_init_required_meals(char const *s);
+int		phi_ctx_init_required_meals(char const *s, t_ctx *ctx);
 int		phi_ctx_to_init(char const *s, t_lint *to_init);
-int		phi_ctx_init(char const **av);
+int		phi_ctx_init(char const **av, t_ctx *ctx);
 
-void	phi_ctx_print(void);
+void	phi_ctx_print(t_ctx *ctx);
 
 t_ctx	*phi_ctx_get(void);
 

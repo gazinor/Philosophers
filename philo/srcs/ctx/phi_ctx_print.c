@@ -13,10 +13,8 @@
 #include <stdio.h>
 #include "type/t_ctx.h"
 
-void	phi_ctx_print(void)
+void	phi_ctx_print(t_ctx *ctx)
 {
-	t_ctx *const	ctx = phi_ctx_get();
-
 	printf("ctx->nb_philo:       %li\n", ctx->nb_philo);
 	printf("ctx->time_to_die:    %li\n", ctx->time_to_die);
 	printf("ctx->time_to_eat:    %li\n", ctx->time_to_eat);

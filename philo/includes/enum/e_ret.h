@@ -17,6 +17,8 @@ enum	e_ret
 {
 	SUCCESS,
 	AC_ERR,
+	NO_PHILO,
+	NO_VALUE,
 	FORMAT_ERR,
 	LIMITS_ERR,
 	MALLOC_ERR,
