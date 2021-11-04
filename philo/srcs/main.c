@@ -19,7 +19,7 @@ int	main(int ac, char const **av)
 	t_ctx	*ctx;
 	int		ret;
 
-	ctx = &(t_ctx){0, 0, 0, 0, -1, 0, 0,
+	ctx = &(t_ctx){0, 0, 0, 0, -1, 0, 0, 0, 
 		PTHREAD_MUTEX_INITIALIZER, 
 		PTHREAD_MUTEX_INITIALIZER, 
 		PTHREAD_MUTEX_INITIALIZER, 

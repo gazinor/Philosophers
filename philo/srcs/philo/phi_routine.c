@@ -29,7 +29,11 @@ void	*phi_routine(void *param)
 	ret = SUCCESS;
 	if (pthread_mutex_lock(&ctx->start_mutex))
 		ret = MUTEX_LOCK_ERR;
+	if (pthread_mutex_lock(&ctx->meal_time))
+		ret = MUTEX_LOCK_ERR;
 	philo->last_meal = phi_now();
+	if (pthread_mutex_unlock(&ctx->meal_time))
+		ret = MUTEX_UNLOCK_ERR;
 	if (pthread_mutex_unlock(&ctx->start_mutex))
 		ret = MUTEX_UNLOCK_ERR;
 	if (pthread_mutex_lock(&ctx->access))
@@ -43,13 +47,21 @@ void	*phi_routine(void *param)
 		if (pthread_mutex_unlock(&ctx->access))
 			ret = MUTEX_UNLOCK_ERR;
 		if (ret == SUCCESS)
+			ret = phi_philo_wait(philo, 0);
+		if (ret == SUCCESS)
 			ret = phi_philo_eat(philo);
 		if (ret == SUCCESS)
+			ret = phi_philo_wait(philo, 0);
+		if (ret == SUCCESS)
 			ret = phi_philo_sleep(philo);
+		if (ret == SUCCESS)
+			ret = phi_philo_wait(philo, 0);
 		if (ret == SUCCESS)
 			ret = phi_philo_think(philo);
 		if (pthread_mutex_lock(&ctx->access))
 			ret = MUTEX_LOCK_ERR;
+		if (ret == SUCCESS && ctx->required_meals != -1 && philo->meal_count >= ctx->required_meals)
+			break ;
 	}
 	if (pthread_mutex_unlock(&ctx->access))
 		ret = MUTEX_UNLOCK_ERR;

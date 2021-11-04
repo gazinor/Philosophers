@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include "philosophers.h"
 #include "type/t_ctx.h"
@@ -20,7 +21,7 @@
 
 int	check_if_anyone_is_dead(t_philo *philo)
 {
-	t_uint const	nb_philo = philo->ctx->nb_philo;
+	t_ctx *const	ctx = philo->ctx;
 	t_lint			now;
 	t_uint			i;
 	t_lint			since_last_meal;
@@ -34,19 +35,26 @@ int	check_if_anyone_is_dead(t_philo *philo)
 	while (1)
 	{
 		i = 0;
-		while (i < nb_philo)
+		while (i < ctx->nb_philo)
 		{
 			now = phi_now();
 			if (now == -1)
 				return (GET_TIME_OF_DAY_ERR);
 			if (pthread_mutex_lock(&philo->ctx->meal_time))
 				return (MUTEX_LOCK_ERR);
+			if (ctx->finished_eating == ctx->nb_philo)
+			{
+				if (pthread_mutex_unlock(&philo->ctx->meal_time))
+					return (MUTEX_UNLOCK_ERR);
+				return (SUCCESS);
+			}
 			since_last_meal = now - philo[i].last_meal;
 			if (pthread_mutex_unlock(&philo->ctx->meal_time))
 				return (MUTEX_UNLOCK_ERR);
 			if (since_last_meal >= philo->ctx->time_to_die)
 				return (is_dead(philo + i));
 			++i;
+			usleep(10);
 		}
 	}
 }

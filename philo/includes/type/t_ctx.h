@@ -28,6 +28,7 @@ struct s_ctx
 	t_lint			required_meals;
 	t_lint			meal_count;
 	t_lint			start;
+	t_lint			finished_eating;
 	pthread_mutex_t	access;
 	pthread_mutex_t	meal_time;
 	pthread_mutex_t	start_mutex;

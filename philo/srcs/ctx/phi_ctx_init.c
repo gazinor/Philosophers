@@ -57,6 +57,7 @@ int	phi_ctx_init(char const **av, t_ctx *ctx)
 		ret = phi_ctx_init_required_meals(av[5], ctx);
 	ctx->meal_count = 0;
 	ctx->start = 0;
+	ctx->finished_eating = 0;
 	pthread_mutex_init(&ctx->access, NULL);
 	pthread_mutex_init(&ctx->meal_time, NULL);
 	pthread_mutex_init(&ctx->start_mutex, NULL);

@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include <unistd.h>
+#include <stdio.h>
 #include "philosophers.h"
 #include "type/t_ctx.h"
 #include "type/t_philo.h"
@@ -38,6 +39,10 @@ int	phi_philo_wait(t_philo *philo, t_lint msec)
 	if (start == -1)
 		return (GET_TIME_OF_DAY_ERR);
 	waited = (now = phi_now()) - start;
+	if (usleep(15) == -1)
+		return (USLEEP_ERR);
+	if ((now - philo->last_meal) >= ctx->time_to_die)
+		return (is_dead(philo));
 	while (now != -1 && waited < msec)
 	{
 		if (usleep(100) == -1)
