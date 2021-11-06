@@ -24,22 +24,18 @@ static int	lock_forks(t_philo *philo, t_fork *fork0, t_fork *fork1)
 	t_ctx *const	ctx = phi_ctx_get();
 	int				ret;
 
-	if (sem_wait(ctx->access))
-		return (MUTEX_LOCK_ERR);
 	if (sem_wait(fork0))
 		return (MUTEX_LOCK_ERR);
+	if (sem_wait(ctx->access))
+		return (MUTEX_LOCK_ERR);
+	philo->state = TOOK_FORK;
 	if (sem_post(ctx->access))
 		return (MUTEX_UNLOCK_ERR);
-	philo->state = TOOK_FORK;
 	ret = phi_philo_state_msg(philo, 0);
 	if (ret != SUCCESS)
 		return (ret);
-	if (sem_wait(ctx->access))
-		return (MUTEX_LOCK_ERR);
 	if (sem_wait(fork1))
 		return (MUTEX_LOCK_ERR);
-	if (sem_post(ctx->access))
-		return (MUTEX_UNLOCK_ERR);
 	return (phi_philo_state_msg(philo, 0));
 }
 
@@ -73,6 +69,8 @@ int	phi_philo_eat(t_philo *philo)
 	int				ret;
 
 	ret = lock_forks(philo, ctx->forks, ctx->forks);
+	if (ret == SUCCESS && phi_now() - philo->last_meal >= ctx->time_to_die)
+		ret = phi_is_dead(philo);
 	if (ret == SUCCESS)
 	{
 		philo->state = EATING;

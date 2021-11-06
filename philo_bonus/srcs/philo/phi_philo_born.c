@@ -35,7 +35,7 @@ void	wait_till_the_end(t_philo *philo)
 			phi_err_msg(MUTEX_UNLOCK_ERR);
 		if (sem_post(ctx->done_eating_philos))
 			phi_err_msg(MUTEX_UNLOCK_ERR);
-		usleep(1000);
+		usleep(5000);
 		free_process(philo);
 		exit(0);
 	}

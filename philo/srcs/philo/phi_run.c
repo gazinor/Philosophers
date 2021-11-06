@@ -19,43 +19,54 @@
 #include "type/t_fork.h"
 #include "enum/e_ret.h"
 
-int	check_if_anyone_is_dead(t_philo *philo)
+int	check_if_any_philo_is_dead(t_philo *philo, int i, int since_last_meal)
 {
 	t_ctx *const	ctx = philo->ctx;
 	t_lint			now;
-	t_uint			i;
+
+	while (i < ctx->nb_philo)
+	{
+		now = phi_now();
+		if (now == -1)
+			return (GET_TIME_OF_DAY_ERR);
+		if (pthread_mutex_lock(&philo->ctx->meal_time))
+			return (MUTEX_LOCK_ERR);
+		if (ctx->finished_eating == ctx->nb_philo)
+		{
+			if (pthread_mutex_unlock(&philo->ctx->meal_time))
+				return (MUTEX_UNLOCK_ERR);
+			return (SUCCESS);
+		}
+		since_last_meal = now - philo[i].last_meal;
+		if (pthread_mutex_unlock(&philo->ctx->meal_time))
+			return (MUTEX_UNLOCK_ERR);
+		if (since_last_meal >= philo->ctx->time_to_die)
+			return (is_dead(philo + i));
+		++i;
+		usleep(10);
+	}
+	return (ITS_GOOD_DONT_WORRY);
+}
+
+int	check_if_anyone_is_dead(t_philo *philo)
+{
+	t_ctx *const	ctx = philo->ctx;
 	t_lint			since_last_meal;
+	t_uint			i;
+	int				ret;
 
-
-	philo->ctx->start = phi_now();
-	if (philo->ctx->start == -1)
+	since_last_meal = 0;
+	ctx->start = phi_now();
+	if (ctx->start == -1)
 		return (GET_TIME_OF_DAY_ERR);
-	if (pthread_mutex_unlock(&philo->ctx->start_mutex))
+	if (pthread_mutex_unlock(&ctx->start_mutex))
 		return (MUTEX_LOCK_ERR);
 	while (1)
 	{
 		i = 0;
-		while (i < ctx->nb_philo)
-		{
-			now = phi_now();
-			if (now == -1)
-				return (GET_TIME_OF_DAY_ERR);
-			if (pthread_mutex_lock(&philo->ctx->meal_time))
-				return (MUTEX_LOCK_ERR);
-			if (ctx->finished_eating == ctx->nb_philo)
-			{
-				if (pthread_mutex_unlock(&philo->ctx->meal_time))
-					return (MUTEX_UNLOCK_ERR);
-				return (SUCCESS);
-			}
-			since_last_meal = now - philo[i].last_meal;
-			if (pthread_mutex_unlock(&philo->ctx->meal_time))
-				return (MUTEX_UNLOCK_ERR);
-			if (since_last_meal >= philo->ctx->time_to_die)
-				return (is_dead(philo + i));
-			++i;
-			usleep(10);
-		}
+		ret = check_if_any_philo_is_dead(philo, i, since_last_meal);
+		if (ret != ITS_GOOD_DONT_WORRY)
+			return (ret);
 	}
 }
 

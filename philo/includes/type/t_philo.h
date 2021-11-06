@@ -43,6 +43,6 @@ int		phi_philo_wait(t_philo *philo, t_lint msec);
 
 void	phi_philo_init(t_philo *philo, t_fork *fork, t_ctx *ctx);
 
-int	is_dead(t_philo *philo);
+int		is_dead(t_philo *philo);
 
 #endif

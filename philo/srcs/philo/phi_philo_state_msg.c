@@ -19,9 +19,24 @@
 #include "state_msg_lookup.h"
 #include "enum/e_ret.h"
 
-int	phi_philo_state_msg(t_philo *philo)
+int	lock_sem_and_print_msg(t_lint time, t_philo *philo, int i)
 {
 	t_voice			*voice;
+
+	voice = &philo->ctx->voice;
+	if (philo->ctx->required_meals)
+	{
+		if (pthread_mutex_lock(voice))
+			return (MUTEX_LOCK_ERR);
+		printf("%6li %4u %s\n", time, philo->idx, g_state_msg[i].msg);
+		if (pthread_mutex_unlock(voice))
+			return (MUTEX_UNLOCK_ERR);
+	}
+	return (SUCCESS);
+}
+
+int	phi_philo_state_msg(t_philo *philo)
+{
 	t_lint			start;
 	t_lint const	now = phi_now();
 	int				i;
@@ -30,19 +45,13 @@ int	phi_philo_state_msg(t_philo *philo)
 		return (GET_TIME_OF_DAY_ERR);
 	if (pthread_mutex_lock(&philo->ctx->access))
 		return (MUTEX_LOCK_ERR);
-	voice = &philo->ctx->voice;
 	start = philo->ctx->start;
 	i = 0;
 	while (g_state_msg[i].msg && philo->state != g_state_msg[i].state)
 		++i;
-	if (philo->ctx->required_meals)
-	{
-		if (pthread_mutex_lock(voice))
-			return (MUTEX_LOCK_ERR);
-		printf("%6li %4u %s\n", now - start, philo->idx, g_state_msg[i].msg);
-		if (pthread_mutex_unlock(voice))
-			return (MUTEX_UNLOCK_ERR);
-	}
+	i = lock_sem_and_print_msg(now - start, philo, i);
+	if (i != SUCCESS)
+		return (i);
 	if (pthread_mutex_unlock(&philo->ctx->access))
 		return (MUTEX_UNLOCK_ERR);
 	if (pthread_mutex_lock(&philo->ctx->access))

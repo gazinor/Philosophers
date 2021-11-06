@@ -36,9 +36,9 @@ void	*is_dead_routine(void *param)
 		now = phi_now();
 		if (now == -1)
 			ret = GET_TIME_OF_DAY_ERR;
-		if ((now - philo->last_meal) >= ctx->time_to_die)
+		if (now - philo->last_meal >= ctx->time_to_die)
 			ret = phi_is_dead(philo);
-		if (ret == SUCCESS && usleep(100) == -1)
+		if (ret == SUCCESS && usleep(15) == -1)
 			ret = USLEEP_ERR;
 	}
 	if (ret != SUCCESS)
