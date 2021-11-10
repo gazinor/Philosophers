@@ -15,11 +15,10 @@
 #include "type/t_ctx.h"
 #include "err_msg_lookup.h"
 
-int	phi_err_msg(int const err)
+int	phi_err_msg(int const err, t_ctx *ctx)
 {
 	int				i;
 	int				er;
-	t_ctx *const	ctx = phi_ctx_get();
 
 	er = (int)err;
 	if (sem_wait(ctx->voice))
@@ -29,5 +28,7 @@ int	phi_err_msg(int const err)
 	while (g_err_msg[i].msg && er != g_err_msg[i].err)
 		++i;
 	printf("%s\n" WHITE, g_err_msg[i].msg);
+	if (sem_post(ctx->voice))
+		er = MUTEX_UNLOCK_ERR;
 	return (er);
 }

@@ -79,9 +79,6 @@ SRC		=	\
 				phi_strcmp.c					\
 				phi_now.c						\
 			}									\
-			${addprefix voice/,					\
-				phi_voice_get.c					\
-			}									\
 			${addprefix parsing/,				\
 				phi_err_msg.c					\
 				phi_format_check.c				\

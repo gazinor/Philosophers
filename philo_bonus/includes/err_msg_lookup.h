@@ -39,6 +39,7 @@ static const t_err_msg		g_err_msg[] = {
 	{USLEEP_ERR, "usleep() failed"},
 	{MUTEX_LOCK_ERR, "sem_wait() failed"},
 	{MUTEX_UNLOCK_ERR, "sem_post() failed"},
+	{SEM_OPEN_ERR, "sem_open() failed"},
 	{SEM_CLOSE_ERR, "sem_close() failed"},
 	{AUTOMATIC_DEATH, "If time_to_die <= (time_to_eat + \
 time_to_sleep), no one can survive."},

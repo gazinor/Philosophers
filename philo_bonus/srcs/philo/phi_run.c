@@ -24,12 +24,11 @@
 void	*kill_processes(void *arg)
 {
 	int				i;
-	t_philo			*philo;
-	t_ctx *const	ctx = phi_ctx_get();
+	t_philo *const	philo = (t_philo *)arg;
+	t_ctx *const	ctx = philo->ctx;
 
-	philo = arg;
 	if (sem_wait(ctx->kill_processes))
-		phi_err_msg(MUTEX_UNLOCK_ERR);
+		phi_err_msg(MUTEX_UNLOCK_ERR, ctx);
 	i = 0;
 	usleep(100);
 	while (i < ctx->nb_philo)
@@ -38,17 +37,15 @@ void	*kill_processes(void *arg)
 	return (NULL);
 }
 
-int	free_process(t_philo *philo)
+int	free_process(t_philo *philo, t_ctx *ctx)
 {
-	t_ctx *const	ctx = phi_ctx_get();
-
 	if (philo)
 		phi_memdel(&philo);
 	if (sem_close(ctx->access) || sem_close(ctx->kill_processes)
 		|| sem_close(ctx->voice) || sem_close(ctx->forks)
 		|| sem_close(ctx->done_eating_philos)
 		|| sem_close(ctx->start_processes)
-		|| sem_close(ctx->free_process))
+		|| sem_close(ctx->free_process) || sem_close(ctx->data_races))
 		return (SEM_CLOSE_ERR);
 	return (SUCCESS);
 }
@@ -57,17 +54,17 @@ int	join_and_free_philos(t_philo *philo)
 {
 	int				i;
 	int				status;
-	t_ctx *const	ctx = phi_ctx_get();
+	t_ctx *const	ctx = philo->ctx;
 
 	i = -1;
 	while (++i < ctx->nb_philo)
 		waitpid(philo[i].pid, &status, 0);
-	return (free_process(philo));
+	return (free_process(philo, ctx));
 }
 
-int	phi_run(void)
+int	phi_run(t_ctx *ctx)
 {
-	t_uint const	nb_philo = phi_ctx_get()->nb_philo;
+	t_uint const	nb_philo = ctx->nb_philo;
 	t_philo			*philo;
 	int				ret;
 	pthread_t		thread;
@@ -75,14 +72,14 @@ int	phi_run(void)
 	philo = malloc(nb_philo * sizeof(t_philo));
 	if (!philo)
 		return (MALLOC_ERR);
-	phi_philo_init(philo, NULL);
+	phi_philo_init(philo, ctx);
 	if (pthread_create(&thread, NULL, kill_processes, philo))
 		return (PTHREAD_CREATE_ERR);
 	if (pthread_detach(thread))
 		return (PTHREAD_DETACH_ERR);
 	ret = phi_philo_born(philo);
 	if (ret != SUCCESS)
-		if (sem_post(phi_ctx_get()->free_process))
+		if (sem_post(ctx->free_process))
 			ret = MUTEX_UNLOCK_ERR;
 	ret = join_and_free_philos(philo);
 	return (ret);

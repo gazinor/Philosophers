@@ -16,15 +16,15 @@
 #include "type/t_philo.h"
 #include "enum/e_state.h"
 
-void	phi_philo_init(t_philo *philo, t_fork *fork)
+void	phi_philo_init(t_philo *philo, t_ctx *ctx)
 {
-	t_uint const	nb_philo = phi_ctx_get()->nb_philo;
+	t_uint const	nb_philo = ctx->nb_philo;
 	t_uint			i;
 
 	i = 0;
-	(void)fork;
 	while (i < nb_philo)
 	{
+		philo[i].ctx = ctx;
 		philo[i].thread = (pthread_t) NULL;
 		philo[i].wait_thread = (pthread_t) NULL;
 		philo[i].idx = i + 1;

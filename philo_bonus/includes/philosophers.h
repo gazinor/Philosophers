@@ -15,12 +15,13 @@
 
 # include <stdbool.h>
 # include "type/t_int.h"
+# include "type/t_ctx.h"
 
-int		phi_err_msg(int const err);
+int		phi_err_msg(int const err, t_ctx *ctx);
 int		phi_format_check(char const **av);
 int		phi_ilimits_check(char const *s, int nb);
 int		phi_init(char const **av);
-int		phi_run(void);
+int		phi_run(t_ctx *ctx);
 int		phi_strcmp(char const *s1, char const *s2);
 int		phi_lintlen(t_lint nb);
 int		phi_limits_check(char const *s, t_lint nb);

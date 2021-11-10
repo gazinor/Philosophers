@@ -18,7 +18,7 @@
 
 int	phi_philo_sleep(t_philo *philo)
 {
-	t_ctx *const	ctx = phi_ctx_get();
+	t_ctx *const	ctx = philo->ctx;
 	int				ret;
 
 	philo->state = SLEEPING;

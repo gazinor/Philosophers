@@ -21,7 +21,7 @@
 
 static int	lock_forks(t_philo *philo, t_fork *fork0, t_fork *fork1)
 {
-	t_ctx *const	ctx = phi_ctx_get();
+	t_ctx *const	ctx = philo->ctx;
 	int				ret;
 
 	if (sem_wait(fork0))
@@ -50,7 +50,7 @@ static int	unlock_forks(t_fork *fork0, t_fork *fork1)
 
 static int	update_meal_counts(t_philo *philo)
 {
-	t_ctx *const	ctx = phi_ctx_get();
+	t_ctx *const	ctx = philo->ctx;
 
 	if (philo->meal_count < ctx->required_meals)
 	{
@@ -65,7 +65,7 @@ static int	update_meal_counts(t_philo *philo)
 
 int	phi_philo_eat(t_philo *philo)
 {
-	t_ctx *const	ctx = phi_ctx_get();
+	t_ctx *const	ctx = philo->ctx;
 	int				ret;
 
 	ret = lock_forks(philo, ctx->forks, ctx->forks);

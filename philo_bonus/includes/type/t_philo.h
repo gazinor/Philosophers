@@ -18,11 +18,13 @@
 # include "type/t_int.h"
 # include "type/t_fork.h"
 # include "type/t_timeval.h"
+# include "type/t_ctx.h"
 
 typedef struct s_philo	t_philo;
 
 struct s_philo
 {
+	t_ctx		*ctx;
 	pthread_t	thread;
 	pthread_t	wait_thread;
 	t_huint		idx;
@@ -39,10 +41,10 @@ int		phi_philo_state_msg(t_philo *philo, int bypass);
 int		phi_philo_think(t_philo *philo);
 int		phi_philo_wait(t_philo *philo, t_lint msec);
 
-void	phi_philo_init(t_philo *philo, t_fork *fork);
+void	phi_philo_init(t_philo *philo, t_ctx *ctx);
 
 int		phi_is_dead(t_philo *philo);
 
-int		free_process(t_philo *philo);
+int		free_process(t_philo *philo, t_ctx *ctx);
 
 #endif

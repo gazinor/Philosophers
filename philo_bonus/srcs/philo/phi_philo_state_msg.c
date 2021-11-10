@@ -22,8 +22,8 @@
 int	phi_philo_state_msg(t_philo *philo, int bypass)
 {
 	t_hhuint const	state = philo->state;
-	t_voice *const	voice = phi_voice_get();
-	t_lint const	start = phi_ctx_get()->start;
+	t_voice *const	voice = philo->ctx->voice;
+	t_lint const	start = philo->ctx->start;
 	t_lint const	now = phi_now();
 	int				i;
 

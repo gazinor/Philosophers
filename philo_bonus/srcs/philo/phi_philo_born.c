@@ -17,33 +17,32 @@
 #include "type/t_philo.h"
 #include "enum/e_ret.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include "colors.h"
 
 void	wait_till_the_end(t_philo *philo)
 {
-	t_ctx *const	ctx = phi_ctx_get();
+	t_ctx *const	ctx = philo->ctx;
 
 	while (1)
 	{
 		if (sem_wait(ctx->free_process))
-			phi_err_msg(MUTEX_LOCK_ERR);
+			phi_err_msg(MUTEX_LOCK_ERR, ctx);
 		if (sem_post(ctx->free_process))
-			phi_err_msg(MUTEX_UNLOCK_ERR);
+			phi_err_msg(MUTEX_UNLOCK_ERR, ctx);
 		++ctx->stop_threads;
 		if (sem_post(ctx->kill_processes))
-			phi_err_msg(MUTEX_UNLOCK_ERR);
+			phi_err_msg(MUTEX_UNLOCK_ERR, ctx);
 		if (sem_post(ctx->done_eating_philos))
-			phi_err_msg(MUTEX_UNLOCK_ERR);
+			phi_err_msg(MUTEX_UNLOCK_ERR, ctx);
 		usleep(5000);
-		free_process(philo);
+		free_process(philo, ctx);
 		exit(0);
 	}
 }
 
 int	launch_process(t_philo *philo, int i)
 {
-	t_ctx *const	ctx = phi_ctx_get();
+	t_ctx *const	ctx = philo->ctx;
 
 	if (!ctx->time_to_eat)
 		ctx->time_to_eat = 1;
@@ -72,16 +71,20 @@ int	launch_process(t_philo *philo, int i)
 
 int	phi_fork_philos(t_philo *philo, int i)
 {
+	int	ret;
+
 	if (fork() == 0)
 		philo[i].pid = fork();
 	else
 	{
-		free_process(philo);
+		free_process(philo, philo->ctx);
 		exit(0);
 	}
 	if (philo[i].pid == 0)
 	{
-		launch_process(philo, i);
+		ret = launch_process(philo, i);
+		if (ret != SUCCESS)
+			return (ret);
 	}
 	else if (philo[i].pid < 0)
 		return (FORK_ERR);
@@ -90,8 +93,8 @@ int	phi_fork_philos(t_philo *philo, int i)
 
 int	phi_philo_born(t_philo *philo)
 {
-	t_ctx *const	ctx = phi_ctx_get();
-	t_lint const	nb_philo = phi_ctx_get()->nb_philo;
+	t_ctx *const	ctx = philo->ctx;
+	t_lint const	nb_philo = ctx->nb_philo;
 	int				i;
 	int				ret;
 	pthread_t		thread;

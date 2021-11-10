@@ -22,6 +22,7 @@ sem_t	*ft_sem_init(const char *name, unsigned int value)
 {
 	sem_t	*sem;
 
+	sem_unlink(name);
 	sem = sem_open(name, O_CREAT | O_EXCL, 0644, value);
 	if (sem != SEM_FAILED)
 		return (sem);
@@ -29,10 +30,8 @@ sem_t	*ft_sem_init(const char *name, unsigned int value)
 	return (sem_open(name, O_CREAT | O_EXCL, 0644, value));
 }
 
-int	phi_ctx_init_required_meals(char const *s)
+int	phi_ctx_init_required_meals(char const *s, t_ctx *ctx)
 {
-	t_ctx *const	ctx = phi_ctx_get();
-
 	if (!s)
 		return (SUCCESS);
 	while (phi_is_space(*s))
@@ -68,9 +67,8 @@ int	phi_logical_death(t_ctx *const ctx)
 	return (SUCCESS);
 }
 
-int	phi_ctx_init(char const **av)
+int	phi_ctx_init(char const **av, t_ctx *ctx)
 {
-	t_ctx *const	ctx = phi_ctx_get();
 	int				ret;
 
 	ret = phi_ctx_to_init(av[1], &(ctx->nb_philo));
@@ -81,9 +79,11 @@ int	phi_ctx_init(char const **av)
 	if (ret == SUCCESS)
 		ret = phi_ctx_to_init(av[4], &(ctx->time_to_sleep));
 	if (ret == SUCCESS)
-		ret = phi_ctx_init_required_meals(av[5]);
+		ret = phi_ctx_init_required_meals(av[5], ctx);
 	if (ret == SUCCESS)
 		ret = phi_logical_death(ctx);
+	if (ret != SUCCESS)
+		return (ret);
 	sem_close(ctx->forks);
 	sem_unlink("forks");
 	ctx->forks = ft_sem_init("forks", ctx->nb_philo);
@@ -91,5 +91,7 @@ int	phi_ctx_init(char const **av)
 	sem_unlink("kill_processes");
 	ctx->kill_processes = ft_sem_init("kill_processes", ctx->nb_philo - 1);
 	ctx->stop_threads = 0;
+	if (ctx->forks == SEM_FAILED || ctx->kill_processes == SEM_FAILED)
+		return (SEM_OPEN_ERR);
 	return (ret);
 }

@@ -22,7 +22,7 @@
 
 int	phi_is_dead(t_philo *philo)
 {
-	t_ctx *const	ctx = phi_ctx_get();
+	t_ctx *const	ctx = philo->ctx;
 
 	if (sem_wait(ctx->voice))
 		return (MUTEX_LOCK_ERR);

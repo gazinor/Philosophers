@@ -23,8 +23,8 @@
 
 void	*is_dead_routine(void *param)
 {
-	t_ctx *const	ctx = phi_ctx_get();
 	t_philo *const	philo = (t_philo *)param;
+	t_ctx *const	ctx = philo->ctx;
 	t_lint			now;
 	int				ret;
 
@@ -38,25 +38,24 @@ void	*is_dead_routine(void *param)
 			ret = GET_TIME_OF_DAY_ERR;
 		if (now - philo->last_meal >= ctx->time_to_die)
 			ret = phi_is_dead(philo);
-		if (ret == SUCCESS && usleep(15) == -1)
+		if (ret == SUCCESS && usleep(100) == -1)
 			ret = USLEEP_ERR;
 	}
 	if (ret != SUCCESS)
 	{
-		phi_err_msg(ret);
+		phi_err_msg(ret, ctx);
 		if (sem_post(ctx->free_process))
-			phi_err_msg(MUTEX_UNLOCK_ERR);
+			phi_err_msg(MUTEX_UNLOCK_ERR, ctx);
 	}
 	return (NULL);
 }
 
 void	*finished_eating_routine(void *param)
 {
-	t_ctx *const	ctx = phi_ctx_get();
+	t_ctx *const	ctx = ((t_philo *)param)->ctx;
 	int				i;
 	int				ret;
 
-	(void)param;
 	i = -1;
 	ret = SUCCESS;
 	while (ret == SUCCESS && ++i < ctx->nb_philo)
@@ -70,17 +69,17 @@ void	*finished_eating_routine(void *param)
 		ret = MUTEX_UNLOCK_ERR;
 	if (ret != SUCCESS)
 	{
-		phi_err_msg(ret);
+		phi_err_msg(ret, ctx);
 		if (sem_post(ctx->free_process))
-			phi_err_msg(MUTEX_UNLOCK_ERR);
+			phi_err_msg(MUTEX_UNLOCK_ERR, ctx);
 	}
 	return (NULL);
 }
 
 void	*phi_routine(void *param)
 {
-	t_ctx *const	ctx = phi_ctx_get();
 	t_philo *const	philo = (t_philo *)param;
+	t_ctx *const	ctx = philo->ctx;
 	int				ret;
 
 	ret = SUCCESS;
@@ -101,6 +100,6 @@ void	*phi_routine(void *param)
 	if (sem_post(ctx->free_process))
 		ret = MUTEX_UNLOCK_ERR;
 	if (ret != SUCCESS)
-		phi_err_msg(ret);
+		phi_err_msg(ret, ctx);
 	return (NULL);
 }
